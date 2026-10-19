@@ -10,6 +10,9 @@ describe("TAPD MCP stdio mapping", () => {
 			mcpArgs: ["mcp-server-tapd"],
 			toolCallTimeoutMs: 60_000,
 			uvDefaultIndex: "https://pypi.tuna.tsinghua.edu.cn/simple",
+			tapdBaseUrl: "https://www.tapd.cn",
+			tapdApiBaseUrl: "https://api.tapd.cn",
+			mcpEnabled: true,
 		} satisfies Config;
 		const settings: TapdSettings = {
 			tapdBaseUrl: "https://www.tapd.cn",

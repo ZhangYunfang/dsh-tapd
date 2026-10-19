@@ -3,7 +3,7 @@ import { saveInputSchema, statusSchema } from "./schemas.js";
 
 const PKG = "dsh-tapd-mcp";
 const direct = { kind: "direct" as const };
-const codec = (name: string, schema: z.ZodType) => ({ mode: "strict" as const, typeSymbol: `${PKG}/types#${name}`, create: () => schema });
+const codec = (name: string, schema: z.ZodType) => ({ mode: "strict" as const, typeSymbol: `${PKG}/types#${name}`, schema });
 
 export const TYPERT = {
 	package: PKG,

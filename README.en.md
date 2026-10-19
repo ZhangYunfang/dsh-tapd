@@ -1,4 +1,4 @@
-> Local compatibility build `0.0.4-local.1` for DSH CLI / core packages `0.2.0-rc.2` / `0.2.1-rc.2`. This is not an upstream release. The older installation commands below refer to the upstream release; for this build use the accompanying local `.tgz`.
+> Local compatibility build `0.0.5-local.1` for DSH CLI / core packages `0.1.2-alpha.2`. This is not an upstream release. The older installation commands below refer to the upstream release; for this build use the accompanying local `.tgz`.
 
 # dsh-tapd-mcp
 
@@ -196,6 +196,19 @@ shasum -a 256 dsh-tapd-mcp-0.0.1.tgz
 - Revoke and rotate any token that has been exposed.
 - \`.credentials.yaml\` is readable by processes running as the same operating-system user. It prevents browser and ordinary settings surfaces from returning the secret, but it is not equivalent to an OS keychain.
 
-## Local compatibility build for DSH 0.2.1-rc.2
+## Local compatibility build for DSH 0.1.2-alpha.2
 
-Run `CI=true pnpm install --frozen-lockfile`, `npm run check`, and `npm pack`. Install the generated archive with `npx --yes @deepseek-ai/dsh@0.2.1-rc.2 plugin --profile web add ./dsh-tapd-mcp-0.0.4-local.1.tgz`, restart DSH, and reload the browser. This build uses volatile Config settings and RPC schema factories. Tokens remain in the credential store. If DSH previously failed to migrate TAPD settings, recover only the three `tapd-mcp` fields from `~/.dsh/settings.yaml.imported` into the profile patch; preserve all other configuration.
+```bash
+# in this plugin checkout
+CI=true pnpm install
+npm run check
+pnpm pack
+
+# run with the same installation that serves DSH (the DSH source checkout)
+cd /path/to/deepseek-harness-dsh-v0.1.2-alpha.2
+pnpm dsh plugin --profile web add /path/to/dsh-tapd-mcp-0.0.5-local.1.tgz
+```
+
+This build targets the DSH 0.1.2 settings contract: the `tapd-mcp` namespace is registered through `ctx.settings.register` (the same-named fields in the profile `cordis.patch.yml` are only the composition `base`), so TAPD URLs and the enabled state are written to the `tapd-mcp` section of `$DSH_HOME/settings.yaml`. Tokens remain in the credential store. Restart `dsh web` and reload the browser after installing.
+
+If an older settings migration failed, the `tapd-mcp` section in `~/.dsh/settings.yaml.imported` keeps the previous URLs and enabled state. Merge only those three fields into the `tapd-mcp` section of `settings.yaml`; never overwrite the whole document or copy other credentials.

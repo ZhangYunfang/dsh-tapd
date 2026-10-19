@@ -9,17 +9,26 @@ export interface Config {
 	mcpArgs: string[];
 	uvDefaultIndex: string;
 	toolCallTimeoutMs: number;
+	tapdBaseUrl: string;
+	tapdApiBaseUrl: string;
+	mcpEnabled: boolean;
 }
 
-export const Config = z.object({
+/**
+ * Composition config for the `tapd-mcp` entry. DSH 0.1.2 has no volatile/live
+ * Config refs: the three user-facing fields are the composition `base` layer of
+ * the `tapd-mcp` settings namespace, so a settings write overrides them without
+ * rewriting `cordis.patch.yml`.
+ */
+export const Config: z<Config> = z.object({
 	tapdTokenRef: z.string().default("TAPD_ACCESS_TOKEN"),
 	mcpCommand: z.string().default("uvx"),
 	mcpArgs: z.array(z.string()).default(["mcp-server-tapd"]),
 	uvDefaultIndex: z.string().default("https://pypi.tuna.tsinghua.edu.cn/simple"),
 	toolCallTimeoutMs: z.number().min(1).default(60_000),
-	tapdBaseUrl: z.string().default(DEFAULT_TAPD_BASE_URL).volatile(),
-	tapdApiBaseUrl: z.string().default(DEFAULT_TAPD_API_BASE_URL).volatile(),
-	mcpEnabled: z.boolean().default(true).volatile(),
+	tapdBaseUrl: z.string().default(DEFAULT_TAPD_BASE_URL),
+	tapdApiBaseUrl: z.string().default(DEFAULT_TAPD_API_BASE_URL),
+	mcpEnabled: z.boolean().default(true),
 });
 
 export type RuntimeConfig = ReturnType<typeof Config>;
@@ -30,6 +39,7 @@ export interface TapdSettings {
 	mcpEnabled: boolean;
 }
 
+/** The user-editable subset registered as the `tapd-mcp` settings namespace. */
 export const TapdSettingsSchema: z<TapdSettings> = z.object({
 	tapdBaseUrl: z.string().default(DEFAULT_TAPD_BASE_URL),
 	tapdApiBaseUrl: z.string().default(DEFAULT_TAPD_API_BASE_URL),

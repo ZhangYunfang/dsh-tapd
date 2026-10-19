@@ -1,4 +1,4 @@
-> Local compatibility build `0.0.4-local.1` for DSH CLI / core packages `0.2.0-rc.2` / `0.2.1-rc.2`. This is not an upstream release. The older installation commands below refer to the upstream release; for this build use the accompanying local `.tgz`.
+> Local compatibility build `0.0.5-local.1` for DSH CLI / core packages `0.1.2-alpha.2`. This is not an upstream release. The older installation commands below refer to the upstream release; for this build use the accompanying local `.tgz`.
 
 # dsh-tapd-mcp
 
@@ -28,23 +28,27 @@ DeepSeek Harness Web 的 TAPD MCP 设置插件。在 DSH 的“设置”页面�
 
 这个版本不包含企业微信扫码或 OAuth。企业微信登录与 `mcp-server-tapd` 的 Token 认证不是同一件事；如果 DSH 本身需要企业微信 SSO，应由 DSH 的访问入口、反向代理或统一身份认证层单独处理。
 
-## 本地修复版安装（DSH 0.2.1-rc.2）
+## 本地修复版安装（DSH 0.1.2-alpha.2）
 
 ```bash
-CI=true pnpm install --frozen-lockfile
+# 在本插件仓库根目录
+CI=true pnpm install
 npm run check
-npm pack
-npx --yes @deepseek-ai/dsh@0.2.1-rc.2 plugin --profile web add ./dsh-tapd-mcp-0.0.4-local.1.tgz
+pnpm pack
+
+# 用与启动 DSH 相同的那份安装执行（源码安装时在 DSH 仓库根目录）
+cd /path/to/deepseek-harness-dsh-v0.1.2-alpha.2
+pnpm dsh plugin --profile web add /path/to/dsh-tapd-mcp-0.0.5-local.1.tgz
 ```
 
-本修复版适配新版 Config volatile 设置及 RPC schema factory。TAPD 地址和启用状态保存在 web profile 的 `cordis.patch.yml` 中，Token 仍由凭据存储管理。安装后重新启动 DSH 并刷新浏览器。
+本修复版适配 DSH 0.1.2 的 settings 服务契约：`tapd-mcp` 设置命名空间由 `ctx.settings.register` 注册（profile `cordis.patch.yml` 中的同名字段作为 composition `base`），TAPD 地址与启用状态写入 `$DSH_HOME/settings.yaml` 的 `tapd-mcp` 段，Token 仍由凭据存储管理。安装后重启 `dsh web` 并刷新浏览器。
 
-如果旧版本设置迁移失败，`~/.dsh/settings.yaml.imported` 中的 `tapd-mcp` 段会保留原地址和启用状态。只将该段的三个设置字段合并到 profile 的 `tapd-mcp` 配置，不要覆盖整个 profile 或复制其他凭据。
+如果旧版本设置迁移失败，`~/.dsh/settings.yaml.imported` 中的 `tapd-mcp` 段会保留原地址和启用状态。只将该段的三个设置字段合并到 `settings.yaml` 的 `tapd-mcp` 段，不要覆盖整个文档或复制其他凭据。
 
 ## 工作方式
 
 - TAPD Token 由 `ctx.credentials` 管理，不写入普通设置或浏览器 RPC 返回值。
-- TAPD 地址和启用状态存放在 profile 的 `tapd-mcp` 配置，由 DSH settings 管理。
+- TAPD 地址和启用状态存放在 `tapd-mcp` 设置命名空间（`$DSH_HOME/settings.yaml`），profile 配置只作为默认值。
 - 启用 MCP 且 Token 已配置后，插件启动 `uvx mcp-server-tapd`。
 - 默认通过清华 PyPI 镜像解析 `mcp-server-tapd`，避免部分网络访问官方 PyPI 时出现 TLS/连接失败；可在插件配置中覆盖或留空恢复官方源。
 - 地址、Token 或 MCP 启用状态变化时，插件会自动重启或停止 MCP 子进程。

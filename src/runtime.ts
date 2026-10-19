@@ -2,9 +2,9 @@ import { createHash } from "node:crypto";
 import type { Context, Fiber } from "@deepseek-ai/cordis";
 import { credentialRef, type CredentialRef } from "@deepseek-ai/dsh-credentials";
 import * as McpClient from "@deepseek-ai/dsh-mcp-client";
-import type {} from "@deepseek-ai/dsh-settings";
+import type { SettingsScope } from "@deepseek-ai/dsh-settings";
 import { Remote, TypertRemoteService } from "@deepseek-ai/dsh-typert-protocol";
-import { type RuntimeConfig, type TapdSettings, validateSettings } from "./config.js";
+import { type RuntimeConfig, type TapdSettings, TapdSettingsSchema, validateSettings } from "./config.js";
 import { createMcpClientConfig } from "./mcp-config.js";
 import { saveTapdSettings } from "./save.js";
 import type { SaveInput, TapdStatus } from "./schemas.js";
@@ -28,9 +28,13 @@ declare module "@deepseek-ai/cordis" {
 }
 
 export class TapdMcpRuntime extends TypertRemoteService {
-	private readonly settingsNamespace: string;
 	private readonly tapdTokenRef: CredentialRef;
 	private readonly config: RuntimeConfig;
+	private readonly baseSettings: TapdSettings;
+	/** Live `tapd-mcp` settings scope while the settings provider is mounted. */
+	private settingsScope: SettingsScope<TapdSettings> | undefined;
+	/** Last accepted settings write while no settings provider is mounted. */
+	private settingsOverride: TapdSettings | undefined;
 	private mcpFiber: Fiber | undefined;
 	private mcpSignature = "";
 	private mcpPhase: McpPhase = "stopped";
@@ -41,14 +45,33 @@ export class TapdMcpRuntime extends TypertRemoteService {
 		super(ctx, "tapdMcp");
 		this.config = config;
 		this.tapdTokenRef = credentialRef(config.tapdTokenRef);
-		this.settingsNamespace = ctx.get("entry")?.options.id ?? SETTINGS_NAMESPACE;
+		this.baseSettings = {
+			tapdBaseUrl: config.tapdBaseUrl,
+			tapdApiBaseUrl: config.tapdApiBaseUrl,
+			mcpEnabled: config.mcpEnabled,
+		};
 		validateSettings(this.currentSettings());
-		ctx.effect(() => ctx.settings.configure({ auto: false }, ctx.fiber), "tapd-mcp: settings presentation");
-		ctx.on("settings/document-updated", (ns) => {
-			if (ns === this.settingsNamespace) this.scheduleReconcile();
-		});
 		ctx.on("credentials/reference-updated", (ref) => {
 			if (ref === this.tapdTokenRef) this.scheduleReconcile();
+		});
+		// 0.1.2 keeps settings behind an optional service seam: register the
+		// namespace (composition entry config as `base`) while the provider is
+		// mounted and fall back to the in-memory override when it detaches.
+		ctx.inject(["settings"], (settingsCtx) => {
+			const scope = settingsCtx.settings.register(SETTINGS_NAMESPACE, TapdSettingsSchema, {
+				base: this.baseSettings,
+				applies: "live",
+				validate: validateSettings,
+			});
+			this.settingsScope = scope;
+			const unwatch = scope.watch(() => {
+				this.scheduleReconcile();
+			});
+			settingsCtx.effect(() => () => {
+				unwatch();
+				this.settingsScope = undefined;
+			}, "tapd-mcp: settings namespace");
+			this.scheduleReconcile();
 		});
 		ctx.effect(async () => async () => {
 			await this.disposeMcp();
@@ -56,11 +79,7 @@ export class TapdMcpRuntime extends TypertRemoteService {
 	}
 
 	private currentSettings(): TapdSettings {
-		return {
-			tapdBaseUrl: this.config.tapdBaseUrl.get(),
-			tapdApiBaseUrl: this.config.tapdApiBaseUrl.get(),
-			mcpEnabled: this.config.mcpEnabled.get(),
-		};
+		return this.settingsScope?.get() ?? this.settingsOverride ?? this.baseSettings;
 	}
 
 	async start(): Promise<void> {
@@ -146,7 +165,14 @@ export class TapdMcpRuntime extends TypertRemoteService {
 		return saveTapdSettings(input, {
 			setToken: (value) => this.ctx.credentials.set(this.tapdTokenRef, value),
 			unsetToken: () => this.ctx.credentials.unset(this.tapdTokenRef),
-			updateSettings: (next) => this.ctx.settings.update(this.settingsNamespace, next),
+			updateSettings: async (next) => {
+				const scope = this.settingsScope;
+				if (scope !== undefined) {
+					await scope.update(next);
+					return;
+				}
+				this.settingsOverride = next;
+			},
 			scheduleReconcile: () => this.scheduleReconcile(),
 			status: () => this.status(),
 		});
