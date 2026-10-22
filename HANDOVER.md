@@ -22,7 +22,7 @@
 ## 2. 本阶段目标与结果（2026-10-19）
 
 - **目标**：把原面向 DSH `0.2.x`（`0.2.0-rc.2` / `0.2.1-rc.2`）的插件改造成 `0.1.2-alpha.2` 可用。
-- **结果**：已完成适配，版本 `0.0.5-local.1`；`npm run check` 全绿；产出安装包；分支 `adapt/dsh-0.1.2-alpha.2`，适配提交 `904042b`（本交接文档随后追加，最新 HEAD 用 `git log -1` 核对；工作树干净）。
+- **结果**：已完成适配，版本 `0.1.0`；`npm run check` 全绿；产出安装包；分支 `adapt/dsh-0.1.2-alpha.2`，适配提交 `904042b`（本交接文档随后追加，最新 HEAD 用 `git log -1` 核对；工作树干净）。
 - **未安装到本机 live profile**（用户环境未动，见第 5 节）。
 
 ## 3. 改了什么（逐项：文件 → 改法 → 为什么）
@@ -33,7 +33,7 @@
 | `src/runtime.ts` | 用 `ctx.settings.register("tapd-mcp", TapdSettingsSchema, {base, applies:"live", validate})` + `scope.watch` 取代 `ctx.settings.configure` 与 `settings/document-updated`；写入改走 `scope.update`；无 settings 服务时落 `settingsOverride` 内存值；删除 `ctx.get("entry")` | 0.1.2 无 entry 服务、无 configure、无 volatile 引用；设置以命名空间 + 显式订阅为契约 |
 | `src/index.ts` | `inject` 由 `["settings","credentials","tools"]` 改为 `["credentials","tools"]` | settings 在 0.1.2 是可选取舍的接缝，不应因为它缺失导致插件整体不加载 |
 | `src/typert.ts`、`src/client/typert-remote.ts` | strict codec 由 `create: () => schema` 改为 `schema` | 0.1.2 的 codec 契约是「直接挂带 parse 的 schema」 |
-| `package.json` | 版本 `0.0.4-local.1` → `0.0.5-local.1`；`@deepseek-ai/dsh-*` 全部钉 `0.1.2-alpha.2`；cordis `4.0.2`、schemastery `3.18.2`；`dsh-credentials`/`dsh-mcp-client`/`dsh-typert-protocol` 由 peer 改为 dependencies | 版本必须与运行版一致；这三个包在运行时真 import，留成 peer 会被 profile 里 hoist 的旧副本（见第 8 节）抢走 |
+| `package.json` | 版本 `0.0.4-local.1` → `0.1.0`；`@deepseek-ai/dsh-*` 全部钉 `0.1.2-alpha.2`；cordis `4.0.2`、schemastery `3.18.2`；`dsh-credentials`/`dsh-mcp-client`/`dsh-typert-protocol` 由 peer 改为 dependencies | 版本必须与运行版一致；这三个包在运行时真 import，留成 peer 会被 profile 里 hoist 的旧副本（见第 8 节）抢走 |
 | `test/dsh-compat.node.mjs` | 整体重写：真 cordis + 真 `SettingsProvider` 子类 + 凭据/工具接缝 | 旧套件依赖 0.2 的 `SettingsForms`、`configEditor`、`updateVolatile`，在 0.1.2 不存在 |
 | `test/mcp-config.test.ts` | 补三个新字段满足 `Config` 形状 | 类型检查 |
 | `README.md`、`README.en.md` | 头部版本、安装命令、存储位置说明 | 与实际行为一致 |
@@ -50,7 +50,7 @@
 | 前端 bundle | 同上 | `CLIENT_BUNDLE_OK`：`__ModuleLoader__` 契约、`settings.section` 注册、typert remote 挂载均通过 |
 | 独立 DSH_HOME 试装 | 见第 7 节 | bundle patch 生效（`--dump-config` 出现 `tapd-mcp` 行）；`dsh web` 启动无报错；`/plugins/??dsh-tapd-mcp/client.js` 返回 200、178371 字节 |
 
-**产物**：`dsh-tapd-mcp-0.0.5-local.1.tgz`（59462 字节），sha256 `22cbd206a40cd3fc73737e6787cfbf30d335ce3f037a201b0ba27cb124e0a4be`。注意 `.gitignore` 忽略 `*.tgz`，换机器需重新 `npm pack`。
+**产物**：`dsh-tapd-mcp-0.1.0.tgz`（59452 字节），sha256 `d3b2ba8cbc06f973bfa6182d9150a4fa4370f80b1606d3d4f03b97dcdc502a2e`。注意 `.gitignore` 忽略 `*.tgz`，换机器需重新 `npm pack`。
 
 ## 5. 未做 / 未验证 / 待裁决（诚实边界）
 
@@ -75,7 +75,7 @@
 cd /Users/zyf/Project/deepseek-harness-dsh-v0.1.2-alpha.2   # 与启动 DSH 相同的安装
 npm_config_registry=https://registry.npmmirror.com \
   pnpm dsh plugin --profile web add \
-  /Users/zyf/Project/DSH_WorkSpace/dsh-tapd-oauth/dsh-tapd-mcp-0.0.5-local.1.tgz
+  /Users/zyf/Project/DSH_WorkSpace/dsh-tapd-oauth/dsh-tapd-mcp-0.1.0.tgz
 ```
 
 装完重启 `dsh web` 进程并刷新 `http://127.0.0.1:3080`，设置页会出现 TAPD 一页。
@@ -86,7 +86,7 @@ npm_config_registry=https://registry.npmmirror.com \
 
 ```bash
 export DSH_HOME=/tmp/dsh-home-tapd
-pnpm dsh plugin --profile web add /path/to/dsh-tapd-mcp-0.0.5-local.1.tgz
+pnpm dsh plugin --profile web add /path/to/dsh-tapd-mcp-0.1.0.tgz
 pnpm dsh --profile web --dump-config | tail -20   # 期望出现 id: tapd-mcp
 ```
 

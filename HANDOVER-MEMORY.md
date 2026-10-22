@@ -8,7 +8,7 @@
 | 轨 | 何时 | 内容摘要 |
 |---|---|---|
 | project（工作目录轨） | 2026-10-19 | 插件项目位置与背景：`/Users/zyf/Project/DSH_WorkSpace/dsh-tapd-oauth`，曾适配 0.1.5 / 0.2.0 / 0.2.1，本次需适配 0.1.2-alpha.2 |
-| project | 2026-10-19 | 改造完成：分支 `adapt/dsh-0.1.2-alpha.2`、提交 `904042b`、版本 `0.0.5-local.1`、产物 `dsh-tapd-mcp-0.0.5-local.1.tgz` |
+| project | 2026-10-19 | 改造完成：分支 `adapt/dsh-0.1.2-alpha.2`、提交 `904042b`、版本 `0.1.0`、产物 `dsh-tapd-mcp-0.1.0.tgz` |
 | project | 2026-10-19 | 验证方式：交叉构建（插件跑在安装版 core）+ 假 stdio MCP server 端到端 + 独立 DSH_HOME 试装 |
 | project | 2026-10-19 | 改动边界：只改 config/runtime/index/typert/两个测试/两个 README/package.json；业务逻辑与前端组件未动 |
 | daily（当日日志） | 2026-10-19 | 上述两次进展记录（改造完成、逐文件说明） |
@@ -24,7 +24,7 @@
 6. 依赖必须钉 `0.1.2-alpha.2`，并把 `dsh-credentials` / `dsh-mcp-client` / `dsh-typert-protocol` 放 **dependencies** 而非 peer —— profile 的 `autoInstallPeers: false` 且已 hoist 旧副本（`typert-protocol@0.1.0-rc.7`、`credentials@0.1.5-rc.2`），留 peer 会被抢。
 7. 冒烟验证的最省事做法：从运行目录 lib 直接 import core（`vendor/cordis/lib/index.js`、`packages/settings/settings/lib/index.js`），插件用自己的 `lib/index.js`；MCP 端到端用自写的换行分隔 JSON-RPC 假 server，别真拉 `uvx`。
 8. 安装插件用与启动 DSH 相同的安装执行 `pnpm dsh plugin --profile web add <tgz>`（`npm_config_registry=https://registry.npmmirror.com`），装完重启 `dsh web` 并刷新浏览器。
-9. 产物校验值：`dsh-tapd-mcp-0.0.5-local.1.tgz`，sha256 `22cbd206a40cd3fc73737e6787cfbf30d335ce3f037a201b0ba27cb124e0a4be`。
+9. 产物校验值：`dsh-tapd-mcp-0.1.0.tgz`，sha256 `d3b2ba8cbc06f973bfa6182d9150a4fa4370f80b1606d3d4f03b97dcdc502a2e`。
 
 ## 3. 灌入新机器的步骤
 

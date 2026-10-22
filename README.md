@@ -1,4 +1,4 @@
-> Local compatibility build `0.0.5-local.1` for DSH CLI / core packages `0.1.2-alpha.2`. This is not an upstream release. The older installation commands below refer to the upstream release; for this build use the accompanying local `.tgz`.
+> Local compatibility build `0.1.0` for DSH CLI / core packages `0.1.2-alpha.2`. This is not an upstream release. The older installation commands below refer to the upstream release; for this build use the accompanying local `.tgz`.
 
 # dsh-tapd-mcp
 
@@ -6,8 +6,8 @@
 
 DeepSeek Harness Web 的 TAPD MCP 设置插件。在 DSH 的“设置”页面填写 TAPD 地址和访问令牌，插件会按下列等价配置启动 MCP：
 
-- 源码仓库：<https://github.com/L-ance/dsh-tapd-oauth>
-- Release 下载：<https://github.com/L-ance/dsh-tapd-oauth/releases>
+- 源码仓库：<https://github.com/ZhangYunfang/dsh-tapd>
+- Release 下载：<https://github.com/ZhangYunfang/dsh-tapd/releases>
 
 ```json
 {
@@ -38,7 +38,7 @@ pnpm pack
 
 # 用与启动 DSH 相同的那份安装执行（源码安装时在 DSH 仓库根目录）
 cd /path/to/deepseek-harness-dsh-v0.1.2-alpha.2
-pnpm dsh plugin --profile web add /path/to/dsh-tapd-mcp-0.0.5-local.1.tgz
+pnpm dsh plugin --profile web add /path/to/dsh-tapd-mcp-0.1.0.tgz
 ```
 
 本修复版适配 DSH 0.1.2 的 settings 服务契约：`tapd-mcp` 设置命名空间由 `ctx.settings.register` 注册（profile `cordis.patch.yml` 中的同名字段作为 composition `base`），TAPD 地址与启用状态写入 `$DSH_HOME/settings.yaml` 的 `tapd-mcp` 段，Token 仍由凭据存储管理。安装后重启 `dsh web` 并刷新浏览器。
@@ -74,14 +74,14 @@ uvx --version
 
 插件通过 GitHub Releases 发布。`dsh plugin add` 支持直接安装 Release 的 `.tgz` URL，不需要提前下载或解压：
 
-<https://github.com/L-ance/dsh-tapd-oauth/releases/download/v0.0.1/dsh-tapd-mcp-0.0.1.tgz>
+<https://github.com/ZhangYunfang/dsh-tapd/releases/download/v0.1.0/dsh-tapd-mcp-0.1.0.tgz>
 
 ## 安装方式一：DeepSeek Harness 源码
 
 适用于已经克隆 DeepSeek Harness 源码、平时使用 `pnpm dsh web` 启动的环境。在 DeepSeek Harness 源码仓库根目录执行：
 
 ```bash
-pnpm dsh plugin --profile web add https://github.com/L-ance/dsh-tapd-oauth/releases/download/v0.0.1/dsh-tapd-mcp-0.0.1.tgz
+pnpm dsh plugin --profile web add https://github.com/ZhangYunfang/dsh-tapd/releases/download/v0.1.0/dsh-tapd-mcp-0.1.0.tgz
 pnpm dsh web
 ```
 
@@ -90,7 +90,7 @@ pnpm dsh web
 适用于没有 DeepSeek Harness 源码仓库的环境。npx 会临时获取官方 `@deepseek-ai/dsh` CLI，插件和 profile 仍保存在用户的 DSH Home 中：
 
 ```bash
-npx --yes @deepseek-ai/dsh@latest plugin --profile web add https://github.com/L-ance/dsh-tapd-oauth/releases/download/v0.0.1/dsh-tapd-mcp-0.0.1.tgz
+npx --yes @deepseek-ai/dsh@latest plugin --profile web add https://github.com/ZhangYunfang/dsh-tapd/releases/download/v0.1.0/dsh-tapd-mcp-0.1.0.tgz
 npx --yes @deepseek-ai/dsh@latest web
 ```
 

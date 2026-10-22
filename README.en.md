@@ -1,4 +1,4 @@
-> Local compatibility build `0.0.5-local.1` for DSH CLI / core packages `0.1.2-alpha.2`. This is not an upstream release. The older installation commands below refer to the upstream release; for this build use the accompanying local `.tgz`.
+> Local compatibility build `0.1.0` for DSH CLI / core packages `0.1.2-alpha.2`. This is not an upstream release. The older installation commands below refer to the upstream release; for this build use the accompanying local `.tgz`.
 
 # dsh-tapd-mcp
 
@@ -6,8 +6,8 @@
 
 A TAPD MCP settings plugin for DeepSeek Harness Web. Configure the TAPD URLs and personal access token in DSH Settings; the plugin starts an equivalent MCP server configuration:
 
-- Source repository: <https://github.com/L-ance/dsh-tapd-oauth>
-- Releases: <https://github.com/L-ance/dsh-tapd-oauth/releases>
+- Source repository: <https://github.com/ZhangYunfang/dsh-tapd>
+- Releases: <https://github.com/ZhangYunfang/dsh-tapd/releases>
 
 \`\`\`json
 {
@@ -57,14 +57,14 @@ uvx --version
 
 \`dsh plugin add\` accepts a Release tarball URL directly. You do not need to download or unpack it first:
 
-<https://github.com/L-ance/dsh-tapd-oauth/releases/download/v0.0.1/dsh-tapd-mcp-0.0.1.tgz>
+<https://github.com/ZhangYunfang/dsh-tapd/releases/download/v0.1.0/dsh-tapd-mcp-0.1.0.tgz>
 
 ## Installation option 1: DeepSeek Harness source checkout
 
 Use this when you run DSH from a DeepSeek Harness source checkout with \`pnpm dsh web\`. Run these commands from the DeepSeek Harness repository root:
 
 \`\`\`bash
-pnpm dsh plugin --profile web add https://github.com/L-ance/dsh-tapd-oauth/releases/download/v0.0.1/dsh-tapd-mcp-0.0.1.tgz
+pnpm dsh plugin --profile web add https://github.com/ZhangYunfang/dsh-tapd/releases/download/v0.1.0/dsh-tapd-mcp-0.1.0.tgz
 pnpm dsh web
 \`\`\`
 
@@ -73,7 +73,7 @@ pnpm dsh web
 Use this when you do not have a DeepSeek Harness source checkout:
 
 \`\`\`bash
-npx --yes @deepseek-ai/dsh@latest plugin --profile web add https://github.com/L-ance/dsh-tapd-oauth/releases/download/v0.0.1/dsh-tapd-mcp-0.0.1.tgz
+npx --yes @deepseek-ai/dsh@latest plugin --profile web add https://github.com/ZhangYunfang/dsh-tapd/releases/download/v0.1.0/dsh-tapd-mcp-0.1.0.tgz
 npx --yes @deepseek-ai/dsh@latest web
 \`\`\`
 
@@ -159,7 +159,7 @@ curl -I --connect-timeout 5 --max-time 15 https://registry.npmmirror.com
 For one command, select the mirror like this:
 
 \`\`\`bash
-npm_config_registry=https://registry.npmmirror.com pnpm dsh plugin --profile web add https://github.com/L-ance/dsh-tapd-oauth/releases/download/v0.0.1/dsh-tapd-mcp-0.0.1.tgz
+npm_config_registry=https://registry.npmmirror.com pnpm dsh plugin --profile web add https://github.com/ZhangYunfang/dsh-tapd/releases/download/v0.1.0/dsh-tapd-mcp-0.1.0.tgz
 \`\`\`
 
 ### MCP fails to start
@@ -206,7 +206,7 @@ pnpm pack
 
 # run with the same installation that serves DSH (the DSH source checkout)
 cd /path/to/deepseek-harness-dsh-v0.1.2-alpha.2
-pnpm dsh plugin --profile web add /path/to/dsh-tapd-mcp-0.0.5-local.1.tgz
+pnpm dsh plugin --profile web add /path/to/dsh-tapd-mcp-0.1.0.tgz
 ```
 
 This build targets the DSH 0.1.2 settings contract: the `tapd-mcp` namespace is registered through `ctx.settings.register` (the same-named fields in the profile `cordis.patch.yml` are only the composition `base`), so TAPD URLs and the enabled state are written to the `tapd-mcp` section of `$DSH_HOME/settings.yaml`. Tokens remain in the credential store. Restart `dsh web` and reload the browser after installing.

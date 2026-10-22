@@ -1,14 +1,14 @@
 {
   "name": "dsh-tapd-mcp",
-  "version": "0.0.5-local.1",
+  "version": "0.1.0",
   "description": "DeepSeek Harness settings integration for TAPD MCP",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/L-ance/dsh-tapd-oauth.git"
+    "url": "git+https://github.com/ZhangYunfang/dsh-tapd.git"
   },
-  "homepage": "https://github.com/L-ance/dsh-tapd-oauth#readme",
+  "homepage": "https://github.com/ZhangYunfang/dsh-tapd#readme",
   "bugs": {
-    "url": "https://github.com/L-ance/dsh-tapd-oauth/issues"
+    "url": "https://github.com/ZhangYunfang/dsh-tapd/issues"
   },
   "type": "module",
   "main": "lib/index.js",
