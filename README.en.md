@@ -198,6 +198,8 @@ shasum -a 256 dsh-tapd-mcp-0.0.1.tgz
 
 ## Local compatibility build for DSH 0.1.2-alpha.2
 
+> Full step-by-step guide (prerequisites, three install modes, GUI setup, verification, troubleshooting, upgrade/uninstall): **[INSTALL.md](./INSTALL.md)**.
+
 ```bash
 # in this plugin checkout
 CI=true pnpm install

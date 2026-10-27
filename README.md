@@ -30,6 +30,8 @@ DeepSeek Harness Web 的 TAPD MCP 设置插件。在 DSH 的“设置”页面�
 
 ## 本地修复版安装（DSH 0.1.2-alpha.2）
 
+> 完整的分步说明（前提检查、三种安装方式、GUI 配置、验证、排错、升级/卸载）见 **[INSTALL.md](./INSTALL.md)**。
+
 ```bash
 # 在本插件仓库根目录
 CI=true pnpm install
